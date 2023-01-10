@@ -5,64 +5,60 @@ const SPACESYMBOL = '.' //次要符號
 const noVacanciesSymbol = 'X'
 
 //切換輸出結果: 
-puzzleOutput(8, 52)  //solution2 for 8-queen puzzle
+puzzleOutput(10,55)  //solution2 for 8-queen puzzle
 //methods
 
 //工具方法
-function getSplitNumber(number){
+function getSplitNumberStr(number){
     if(number<10) number = '0'+ number
     return String(number).split("")
 }
 
-// /**
-//  * 棋盤產生器
-//  * 畫出一行的棋盤
-//  * @param {number} puzzleNumber 必填，代表 n-puzzle 的 n
-//  * @param {number} placementIndex 必填，指示Queen要放在哪個位置
-//  * @param {string} queenSymbol 必填，Queen 的符號樣式
-//  * @param {string} spaceSymbol 必填，空格 的符號樣式
-//  * @returns string ， 返回某一行棋盤字串
-//  */
-// function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
-//     //把queen放在第index個，然後剩下的用second填滿
-//     let result = ''
-//     for ( let i = 0 ; i < puzzleNumber ; i++){
-//         if( i === placementIndex ) result += queenSymbol
-//         else result += spaceSymbol
-//     }
+function initPuzzle(puzzleNumber){
+    const queenPuzzle = Array.from(Array(puzzleNumber),()=> new Array(puzzleNumber)) 
+    queenPuzzle.forEach( row => {
+        for(let i = 0 ; i <row.length ;i++ ){
+            row[i] = null
+        }
+    })
+    return queenPuzzle
+}
 
-//     return result
-// }
+/**
+ * 設置皇后米字範圍不能放置其他皇后
+ * @param {Array} queenPuzzle :傳入棋盤陣列
+ * @param {number} firstQueenIndex 
+ */
 function setNoVacancies(queenPuzzle,firstQueenIndex){
-    const [ rowIndex, colIndex ] = getSplitNumber(firstQueenIndex)
+    const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
     
      //2.將其米字路徑範圍上的都設置為"不能擺放"
         //如:第一顆02
         //該row全部都不能放(橫)
-        for( let i = 0 ; i< queenPuzzle[rowIndex].length ;i++){
+        for( let i = 0 ; i< queenPuzzle[queenRowIndex].length ;i++){
             //Q的地方或是已經標示為沒空位的則不用再畫一次
-            if( i === Number(colIndex) || (queenPuzzle[rowIndex][i] === noVacanciesSymbol)) continue
-            queenPuzzle[rowIndex][i] = noVacanciesSymbol
+            if( i === Number(queenColIndex) || (queenPuzzle[queenRowIndex][i] === noVacanciesSymbol)) continue
+            queenPuzzle[queenRowIndex][i] = noVacanciesSymbol
         }
         //每一row的第2顆都不能放(直)
         for( let i = 0 ; i< queenPuzzle.length ;i++){
             //Q的地方或是已經標示為沒空位的則不用再畫一次
-            if( i === Number(rowIndex) || queenPuzzle[i][colIndex] === noVacanciesSymbol) continue
-            queenPuzzle[i][colIndex] = noVacanciesSymbol
+            if( i === Number(queenRowIndex) || queenPuzzle[i][queenColIndex] === noVacanciesSymbol) continue
+            queenPuzzle[i][queenColIndex] = noVacanciesSymbol
         }
         //其右上到左下的路徑都不能放
         for( let i = 0 ; i< queenPuzzle.length ;i++){
             //Q的地方或是已經標示為沒空位的則不用再畫一次
-            if( i === Number(rowIndex) || queenPuzzle[i][Number(colIndex) + (Number(rowIndex)-i)] === noVacanciesSymbol) continue
+            if( i === Number(queenRowIndex) || queenPuzzle[i][Number(queenColIndex) + (Number(queenRowIndex)-i)] === noVacanciesSymbol) continue
             //畫符號
-            queenPuzzle[i][Number(colIndex) + (Number(rowIndex)-i)] = noVacanciesSymbol
+            queenPuzzle[i][Number(queenColIndex) + (Number(queenRowIndex)-i)] = noVacanciesSymbol
         }
         //其左上到右下的路徑都不能放
         for( let i = 0 ; i< queenPuzzle.length ;i++){
             //Q的地方或是已經標示為沒空位的則不用再畫一次
-            if( i === Number(rowIndex) || queenPuzzle[i][Number(colIndex) + (i-Number(rowIndex))] === noVacanciesSymbol) continue
+            if( i === Number(queenRowIndex) || queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] === noVacanciesSymbol) continue
             //畫符號
-            queenPuzzle[i][Number(colIndex) + (i-Number(rowIndex))] = noVacanciesSymbol
+            queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] = noVacanciesSymbol
         }
 }
 /**
@@ -73,16 +69,14 @@ function setNoVacancies(queenPuzzle,firstQueenIndex){
  * @returns {Array<number>}[queenIndexArray] 返回一個每行皇后擺放位置的清單
  */
 function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
-    const [ rowIndex, colIndex ] = getSplitNumber(firstQueenIndex)
-    let queenPuzzle = Array.from(Array(puzzleNumber),()=> new Array(puzzleNumber)) 
+    const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
+    let queenPuzzle = initPuzzle(puzzleNumber)
     //陣列製作步驟 :
-    //1.知道第一顆皇后位置
-    queenPuzzle[rowIndex][colIndex] = QUEENSYMBOL
+    //1.放置第一顆皇后
+    queenPuzzle[queenRowIndex][queenColIndex] = QUEENSYMBOL
     //2.將其米字路徑設置為不能用
     setNoVacancies(queenPuzzle,firstQueenIndex)
-    
-    // console.log(queenPuzzle)
-    //2.開始在下一行擺放皇后，只能放在還可以放的位置上
+    //3.開始在下一行擺放皇后，只能放在還可以放的位置上
       //若該行全部都不能擺放，則表示無解，直接return
     return queenPuzzle
 }
@@ -94,18 +88,19 @@ function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
 //  * @returns string ，返回最終 puzzle 輸出
 //  */
 function solutionMaker(puzzleNumber, firstQueenIndex){
+    const newLinrSymbol = '\n'
     let result = ''
 
     const queenIndexArray = queenPuzzleMaker( puzzleNumber, firstQueenIndex )
     queenIndexArray.forEach( row => { 
         let rowResult = ''
-        for ( symbol of row ){
+        row.forEach( (symbol,index) =>{
             if( !symbol ) rowResult += SPACESYMBOL
             // else if( symbol === noVacanciesSymbol) rowResult += SPACESYMBOL
             else if( symbol === noVacanciesSymbol) rowResult += noVacanciesSymbol  //debug專用
             else if( symbol === QUEENSYMBOL ) rowResult += QUEENSYMBOL
-        }
-        console.log(rowResult)
+            if(index === puzzleNumber-1) rowResult += newLinrSymbol
+        } )
         result += rowResult
     })
     return result
@@ -119,13 +114,14 @@ function solutionMaker(puzzleNumber, firstQueenIndex){
  * @returns string ， 返回最終 puzzle 輸出
  */
 function puzzleOutput( puzzleNumber, firstQueenIndex = 1 ){
-    const [ rowIndex, colIndex ] = getSplitNumber(firstQueenIndex)
-    if(firstQueenIndex<0 || rowIndex > puzzleNumber-1 || colIndex > puzzleNumber-1) return console.log('旗子擺放位置超出範圍')
+    const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
+    if(firstQueenIndex<0 || queenRowIndex > puzzleNumber-1 || queenColIndex > puzzleNumber-1) return console.log('旗子擺放位置超出範圍')
     if( typeof(puzzleNumber)!=='number' ) return console.log('請輸入數字')
     if( !Number.isInteger(puzzleNumber) || puzzleNumber <= 0 ) return console.log('請輸入正整數')
     if( (puzzleNumber % 2) !==0  ) return console.log('請輸入偶數')
-    // console.log( solutionMaker(puzzleNumber, firstQueenIndex)) 
-    solutionMaker(puzzleNumber, firstQueenIndex)
+    console.log(solutionMaker(puzzleNumber, firstQueenIndex))
+    // solutionMaker(puzzleNumber, firstQueenIndex)
+
 }
 
 //test
