@@ -1,4 +1,6 @@
  
+//取得所有解puzzleOutput(4,3)數字一個一個帶入，只印出有解的
+
 //樣式修改變數
 const QUEENSYMBOL = 'Q' //主要符號
 const SPACESYMBOL = '.' //次要符號
@@ -6,7 +8,7 @@ const noVacanciesSymbol = 'X'
 const maxPuzzleSize = 10
 
 //切換輸出結果: 
-puzzleOutput(6,3) 
+puzzleOutput(4,03) 
 //methods
 
 //工具方法
@@ -28,7 +30,7 @@ function initPuzzle(puzzleNumber){
 /**
  * 設置皇后米字範圍不能放置其他皇后
  * @param {Array} queenPuzzle :傳入棋盤陣列
- * @param {number} queenIndex 
+ * @param {number} queenIndex : queen所在位置的index
  */
 function setNoVacancies(queenPuzzle,queenIndex){
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(queenIndex)
@@ -68,29 +70,30 @@ function setNoVacancies(queenPuzzle,queenIndex){
         }
 }
 
-function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow) {
-    // if(puzzleRow > puzzleNumber-1) return
-    let row = puzzleRow
-    let canSetQueen = false
-    console.log('設置第',puzzleRow,'行皇后')
-    queenPuzzle[row].forEach( (symbol,index) =>{
-        //若該行有空位能設置皇后
-        if( symbol !== noVacanciesSymbol && symbol !== QUEENSYMBOL) { 
-            // queenPuzzle[row][index] = QUEENSYMBOL
-            // setNoVacancies( queenPuzzle, Number(puzzleRow+''+index))
-            canSetQueen = true
-            console.log('皇后設置在',Number(row+''+index))
-            return
-        }
-    } )
+
+//1.少算到第一個設置的皇后
+function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow, totalQueen = 0) {
+    //終止條件
+    if(puzzleRow > puzzleNumber-1) return totalQueen
+
     
-    if( row === puzzleNumber-1 ) { //檢查最後一行
-        console.log('最後一行是',puzzleRow,puzzleNumber-1,'設置成功與否',canSetQueen)
-        // if(!canSetQueen ) return 'No Solution'  //最後一次如果不能設置皇后表示無解
-        return 'Set All Queen Success!'
-    }
-    row++
-    setRowQueen(puzzleNumber, queenPuzzle, row)
+    //遞迴主體
+    queenPuzzle[puzzleRow].forEach( (symbol,index) =>{
+        //遇到皇后++一下
+        if( symbol ===  QUEENSYMBOL) totalQueen ++
+
+        //若都沒有皇后、並且有空位
+        if( symbol !== noVacanciesSymbol && symbol !== QUEENSYMBOL) { 
+            queenPuzzle[puzzleRow][index] = QUEENSYMBOL
+            setNoVacancies( queenPuzzle, Number(puzzleRow+''+index))
+            totalQueen ++
+            return 
+        }
+        
+    } )
+    //驅動遞迴
+    puzzleRow++
+    return setRowQueen(puzzleNumber, queenPuzzle, puzzleRow, totalQueen)
 }
 
 /**
@@ -108,9 +111,9 @@ function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
     queenPuzzle[queenRowIndex][queenColIndex] = QUEENSYMBOL
     setNoVacancies(queenPuzzle,firstQueenIndex)
     //2.開始遞迴queenPuzzleMaker在下一行可以擺放的位置上放皇后
-    // let scuessSet = setRowQueen(puzzleNumber, queenPuzzle,0)
-    // console.log(scuessSet)
-    return queenPuzzle
+    let queenNumber = setRowQueen(puzzleNumber, queenPuzzle,0)
+    if( queenNumber === puzzleNumber ) return queenPuzzle
+    return console.log('無解')
 }
 
 // /**
@@ -124,6 +127,7 @@ function solutionMaker(puzzleNumber, firstQueenIndex){
     let result = ''
 
     const queenIndexArray = queenPuzzleMaker( puzzleNumber, firstQueenIndex )
+    if(!queenIndexArray) return
     queenIndexArray.forEach( row => { 
         let rowResult = ''
         row.forEach( (symbol,index) =>{
