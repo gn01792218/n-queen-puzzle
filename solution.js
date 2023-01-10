@@ -5,7 +5,8 @@ const SPACESYMBOL = '.' //次要符號
 const noVacanciesSymbol = 'X'
 
 //切換輸出結果: 
-puzzleOutput(10,55)  //solution2 for 8-queen puzzle
+// puzzleOutput(4,33) 
+puzzleOutput(8,73)
 //methods
 
 //工具方法
@@ -27,10 +28,10 @@ function initPuzzle(puzzleNumber){
 /**
  * 設置皇后米字範圍不能放置其他皇后
  * @param {Array} queenPuzzle :傳入棋盤陣列
- * @param {number} firstQueenIndex 
+ * @param {number} queenIndex 
  */
-function setNoVacancies(queenPuzzle,firstQueenIndex){
-    const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
+function setNoVacancies(queenPuzzle,queenIndex){
+    const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(queenIndex)
     
      //2.將其米字路徑範圍上的都設置為"不能擺放"
         //如:第一顆02
@@ -61,28 +62,54 @@ function setNoVacancies(queenPuzzle,firstQueenIndex){
             queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] = noVacanciesSymbol
         }
 }
+
+function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow) {
+    // if(puzzleRow > puzzleNumber-1) return
+    let row = puzzleRow
+    let canSetQueen = false
+    console.log('設置第',puzzleRow,'行皇后')
+    queenPuzzle[row].forEach( (symbol,index) =>{
+        //若該行有空位能設置皇后
+        if( symbol !== noVacanciesSymbol && symbol !== QUEENSYMBOL) { 
+            // queenPuzzle[row][index] = QUEENSYMBOL
+            // setNoVacancies( queenPuzzle, Number(puzzleRow+''+index))
+            canSetQueen = true
+            console.log('皇后設置在',Number(row+''+index))
+            return
+        }
+    } )
+    
+    if( row === puzzleNumber-1 ) { //檢查最後一行
+        console.log('最後一行是',puzzleRow,puzzleNumber-1,'設置成功與否',canSetQueen)
+        // if(!canSetQueen ) return 'No Solution'  //最後一次如果不能設置皇后表示無解
+        return 'Set All Queen Success!'
+    }
+    row++
+    setRowQueen(puzzleNumber, queenPuzzle, row)
+}
+
 /**
- * 棋盤 產生器
+ * 棋盤 產生器 (會產生一種解)
  * 負責產生每個位置的Queen要擺在個index的列表清單
  * @param {number} puzzleNumber 必填，代表 n-puzzle 的 n
- * @param {number} firstQueenIndex 必填，選擇第一個queen要擺放的位置 ()
- * @returns {Array<number>}[queenIndexArray] 返回一個每行皇后擺放位置的清單
+ * @param {number} firstQueenIndex 必填，選擇第一個queen要擺放的位置
+ * @returns {Array<number>}[queenIndexArray] 返回一個每行皇后擺放位置的清單 ( 一種解 )
  */
 function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
     let queenPuzzle = initPuzzle(puzzleNumber)
     //陣列製作步驟 :
-    //1.放置第一顆皇后
+    //1.放置第一顆皇后，並將其米字路徑設置為不能使用
     queenPuzzle[queenRowIndex][queenColIndex] = QUEENSYMBOL
-    //2.將其米字路徑設置為不能用
     setNoVacancies(queenPuzzle,firstQueenIndex)
-    //3.開始在下一行擺放皇后，只能放在還可以放的位置上
-      //若該行全部都不能擺放，則表示無解，直接return
+    //2.開始遞迴queenPuzzleMaker在下一行可以擺放的位置上放皇后
+    // let scuessSet = setRowQueen(puzzleNumber, queenPuzzle,0)
+    // console.log(scuessSet)
     return queenPuzzle
 }
 
 // /**
-//  * 依照二維陣列畫出棋盤解
+//  * 依照二維陣列畫出一種棋盤解
 //  * @param {number} puzzleNumber 必填，代表 n-puzzle 的 n
 //  * @param {*} firstQueenIndex 必填
 //  * @returns string ，返回最終 puzzle 輸出
@@ -106,6 +133,7 @@ function solutionMaker(puzzleNumber, firstQueenIndex){
     return result
 }
 
+
 /**
  * 輸出 puzzle solution 的 main function
  * 
@@ -121,7 +149,6 @@ function puzzleOutput( puzzleNumber, firstQueenIndex = 1 ){
     if( (puzzleNumber % 2) !==0  ) return console.log('請輸入偶數')
     console.log(solutionMaker(puzzleNumber, firstQueenIndex))
     // solutionMaker(puzzleNumber, firstQueenIndex)
-
 }
 
 //test
