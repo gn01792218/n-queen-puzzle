@@ -3,9 +3,10 @@
 const QUEENSYMBOL = 'Q' //主要符號
 const SPACESYMBOL = '.' //次要符號
 const noVacanciesSymbol = 'X'
+const maxPuzzleSize = 10
 
 //切換輸出結果: 
-puzzleOutput(4,33) 
+puzzleOutput(6,3) 
 //methods
 
 //工具方法
@@ -31,41 +32,40 @@ function initPuzzle(puzzleNumber){
  */
 function setNoVacancies(queenPuzzle,queenIndex){
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(queenIndex)
-    
+    const puzzleRows = queenPuzzle.length
+    const puzzleCols = queenPuzzle[0].length
      //2.將其米字路徑範圍上的都設置為"不能擺放"
         //如:第一顆02
         //該row全部都不能放(橫)
-        // for( let i = 0 ; i< queenPuzzle[queenRowIndex].length ;i++){
-        //     //Q的地方或是已經標示為沒空位的則不用再畫一次
-        //     if( i === Number(queenColIndex) || (queenPuzzle[queenRowIndex][i] === noVacanciesSymbol)) continue
-        //     queenPuzzle[queenRowIndex][i] = noVacanciesSymbol
-        // }
-        //每一row的第2顆都不能放(直)
-        // for( let i = 0 ; i< queenPuzzle.length ;i++){
-        //     //Q的地方或是已經標示為沒空位的則不用再畫一次
-        //     if( i === Number(queenRowIndex) || queenPuzzle[i][queenColIndex] === noVacanciesSymbol) continue
-        //     queenPuzzle[i][queenColIndex] = noVacanciesSymbol
-        // }
-        //其右上到左下的路徑都不能放
-        for( let i = 0 ; i< queenPuzzle.length ;i++){
+        for( let i = 0 ; i< puzzleCols ;i++){
             //Q的地方或是已經標示為沒空位的則不用再畫一次
-            console.log(i)
-            if( i === Number(queenRowIndex) || queenPuzzle[i][Number(queenColIndex) + (Number(queenRowIndex)-i)] === noVacanciesSymbol) continue
-            //超出表格也不用畫
-            // if( i > Number(queenRowIndex)) continue
+            if( i === Number(queenColIndex) || (queenPuzzle[queenRowIndex][i] === noVacanciesSymbol)) continue
+            queenPuzzle[queenRowIndex][i] = noVacanciesSymbol
+        }
+        //每一row的第2顆都不能放(直)
+        for( let i = 0 ; i< puzzleRows ;i++){
+            //Q的地方或是已經標示為沒空位的則不用再畫一次
+            if( i === Number(queenRowIndex) || queenPuzzle[i][queenColIndex] === noVacanciesSymbol) continue
+            queenPuzzle[i][queenColIndex] = noVacanciesSymbol
+        }
+        //其右上到左下的路徑都不能放
+        for( let i = 0 ; i< puzzleRows ;i++){
+            //Q的地方或是已經標示為沒空位的則不用再畫一次
+            let col = Number(queenColIndex) + (Number(queenRowIndex)-i)
+            if(col >= puzzleCols) continue //超出表格也不用畫
+            if( i === Number(queenRowIndex) || queenPuzzle[i][col] === noVacanciesSymbol) continue
             //畫符號
             queenPuzzle[i][Number(queenColIndex) + (Number(queenRowIndex)-i)] = noVacanciesSymbol
-            console.log('畫在',i,Number(queenColIndex) + (Number(queenRowIndex)-i))
         }
         //其左上到右下的路徑都不能放
-        // for( let i = 0 ; i< queenPuzzle.length ;i++){
-        //     //Q的地方或是已經標示為沒空位的則不用再畫一次
-        //     if( i === Number(queenRowIndex) || queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] === noVacanciesSymbol) continue
-        //     //超出表格也不用畫
-        //     // if( i > Number(queenRowIndex)) continue
-        //     //畫符號
-        //     queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] = noVacanciesSymbol
-        // }
+        for( let i = 0 ; i< puzzleRows ;i++){
+            let col = Number(queenColIndex) + (i-Number(queenRowIndex))
+            if(col >= puzzleCols) continue //超出表格也不用畫
+            //Q的地方或是已經標示為沒空位的則不用再畫一次
+            if( i === Number(queenRowIndex) || queenPuzzle[i][col] === noVacanciesSymbol) continue
+            //畫符號
+            queenPuzzle[i][Number(queenColIndex) + (i-Number(queenRowIndex))] = noVacanciesSymbol
+        }
 }
 
 function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow) {
@@ -147,6 +147,7 @@ function solutionMaker(puzzleNumber, firstQueenIndex){
  * @returns string ， 返回最終 puzzle 輸出
  */
 function puzzleOutput( puzzleNumber, firstQueenIndex = 1 ){
+    if(puzzleNumber > maxPuzzleSize) return console.log(`請勿輸入超過${maxPuzzleSize}`)
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
     if(firstQueenIndex<0 || queenRowIndex > puzzleNumber-1 || queenColIndex > puzzleNumber-1) return console.log('旗子擺放位置超出範圍')
     if( typeof(puzzleNumber)!=='number' ) return console.log('請輸入數字')
