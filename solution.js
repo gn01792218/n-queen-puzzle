@@ -8,7 +8,7 @@ const noVacanciesSymbol = 'X'
 const maxPuzzleSize = 10
 
 //切換輸出結果: 
-puzzleOutput(4,03) 
+puzzleOutput(4) 
 //methods
 
 //工具方法
@@ -17,6 +17,11 @@ function getSplitNumberStr(number){
     return String(number).split("")
 }
 
+/**
+ * 初始化棋盤
+ * @param {number} puzzleNumber 
+ * @returns {Array} 返回一個 queenPuzzle 陣列
+ */
 function initPuzzle(puzzleNumber){
     const queenPuzzle = Array.from(Array(puzzleNumber),()=> new Array(puzzleNumber)) 
     queenPuzzle.forEach( row => {
@@ -70,12 +75,17 @@ function setNoVacancies(queenPuzzle,queenIndex){
         }
 }
 
-
-//1.少算到第一個設置的皇后
+/**
+ * 遞迴-為棋盤設置每一行的皇后
+ * @param {number} puzzleNumber 
+ * @param {Array} queenPuzzle 
+ * @param {number} puzzleRow 
+ * @param {number} totalQueen 皇后總數，每次遞迴都會回傳累積的總數
+ * @returns {number} 會把最後的皇后數量+總，讓外面判斷是否有解
+ */
 function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow, totalQueen = 0) {
     //終止條件
     if(puzzleRow > puzzleNumber-1) return totalQueen
-
     
     //遞迴主體
     queenPuzzle[puzzleRow].forEach( (symbol,index) =>{
@@ -103,7 +113,7 @@ function setRowQueen(puzzleNumber, queenPuzzle, puzzleRow, totalQueen = 0) {
  * @param {number} firstQueenIndex 必填，選擇第一個queen要擺放的位置
  * @returns {Array<number>}[queenIndexArray] 返回一個每行皇后擺放位置的清單 ( 一種解 )
  */
-function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
+function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 0){
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
     let queenPuzzle = initPuzzle(puzzleNumber)
     //陣列製作步驟 :
@@ -112,28 +122,30 @@ function queenPuzzleMaker(puzzleNumber, firstQueenIndex = 1){
     setNoVacancies(queenPuzzle,firstQueenIndex)
     //2.開始遞迴queenPuzzleMaker在下一行可以擺放的位置上放皇后
     let queenNumber = setRowQueen(puzzleNumber, queenPuzzle,0)
+
+    //如果有解回傳陣列，否則回傳null
     if( queenNumber === puzzleNumber ) return queenPuzzle
-    return console.log('無解')
+    return null
 }
 
-// /**
-//  * 依照二維陣列畫出一種棋盤解
-//  * @param {number} puzzleNumber 必填，代表 n-puzzle 的 n
-//  * @param {*} firstQueenIndex 必填
-//  * @returns string ，返回最終 puzzle 輸出
-//  */
-function solutionMaker(puzzleNumber, firstQueenIndex){
+/**
+ * 依照二維陣列畫出一種棋盤解
+ * @param { number } puzzleNumber 必填，代表 n-puzzle 的 n
+ * @param { number } firstQueenIndex 必填
+ * @returns string ，返回最終 puzzle 輸出
+ */
+function solutionMaker(puzzleNumber, firstQueenIndex =0){
     const newLinrSymbol = '\n'
-    let result = ''
+    let result = `//solution 1 :${newLinrSymbol}`
 
     const queenIndexArray = queenPuzzleMaker( puzzleNumber, firstQueenIndex )
-    if(!queenIndexArray) return
+    if(!queenIndexArray) return '無解'
     queenIndexArray.forEach( row => { 
         let rowResult = ''
         row.forEach( (symbol,index) =>{
             if( !symbol ) rowResult += SPACESYMBOL
-            // else if( symbol === noVacanciesSymbol) rowResult += SPACESYMBOL
-            else if( symbol === noVacanciesSymbol) rowResult += noVacanciesSymbol  //debug專用
+            else if( symbol === noVacanciesSymbol) rowResult += SPACESYMBOL
+            // else if( symbol === noVacanciesSymbol) rowResult += noVacanciesSymbol  //debug專用
             else if( symbol === QUEENSYMBOL ) rowResult += QUEENSYMBOL
             if(index === puzzleNumber-1) rowResult += newLinrSymbol
         } )
@@ -150,15 +162,19 @@ function solutionMaker(puzzleNumber, firstQueenIndex){
  * @param { number } firstQueenIndex 選填，可以指定第一顆皇后的擺放位置 ( 若index範圍不在棋盤反圍內、無法得解都可能造成無法得解 )
  * @returns string ， 返回最終 puzzle 輸出
  */
-function puzzleOutput( puzzleNumber, firstQueenIndex = 1 ){
+function puzzleOutput( puzzleNumber, firstQueenIndex = 0 ){
     if(puzzleNumber > maxPuzzleSize) return console.log(`請勿輸入超過${maxPuzzleSize}`)
     const [ queenRowIndex, queenColIndex ] = getSplitNumberStr(firstQueenIndex)
     if(firstQueenIndex<0 || queenRowIndex > puzzleNumber-1 || queenColIndex > puzzleNumber-1) return console.log('旗子擺放位置超出範圍')
     if( typeof(puzzleNumber)!=='number' ) return console.log('請輸入數字')
     if( !Number.isInteger(puzzleNumber) || puzzleNumber <= 0 ) return console.log('請輸入正整數')
     if( (puzzleNumber % 2) !==0  ) return console.log('請輸入偶數')
+
     console.log(solutionMaker(puzzleNumber, firstQueenIndex))
-    // solutionMaker(puzzleNumber, firstQueenIndex)
+    //要使用遞迴來求解
+    for(let i = 0 ; i< puzzleNumber.length ; i++ ){
+        
+    }
 }
 
 //test
