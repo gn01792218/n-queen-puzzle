@@ -1,7 +1,10 @@
- 
-//1. 檢查函式 (傳入Queen的位置,檢查是否有和其他皇后相撞)
+ //1.外圈從第一row開始跑；然後使用check函式放皇后，
+   //如果在該row的最後一col check結果也是false，表示無解
+//2. check函式 (傳入Queen的位置,檢查是否有和其他皇后相撞)
+  //只要檢查 其上一Row開始的Rows 有無任一在他米字範圍內的皇后即可
   //回傳true或false
-
+  //true的話，往下一row移動  ； false的話往右邊的col移動
+  
 //樣式修改變數
 const QUEENSYMBOL = 'Q' //主要符號
 const SPACESYMBOL = '.' //次要符號
