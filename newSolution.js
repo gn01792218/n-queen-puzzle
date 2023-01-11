@@ -64,26 +64,48 @@ function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
 //演算法
 /**
  * 用來檢查該格未置可否放置皇后
- * @param {Object} position ，位置物件: { row:行, col:列 }
+ * @param {Array} colposition ，[rowIndex, colIndex]
  * @param {Array} puzzle , 棋盤二維陣列
  * @returns {boolean} 回傳true表示該格可以放皇后
  */
-function hasQueenPosition(position,puzzle) {
-    const { row, col } = position
+function colhasQueenPosition(colposition,puzzle) {
+    const [row, col] = colposition
+    if( row === 0 ) return
     //2. check函式 (傳入Queen的位置,檢查是否有和其他皇后相撞)
         //只要檢查 其上一Row開始的Rows 有無任一在他米字範圍內的皇后即可
         //回傳true或false
-    return false
+        
+    for(let i = 0 ; i < row ; i++){
+        //檢查直線上有無其他皇后
+        if( puzzle[ i ][ col ] === QUEENSYMBOL) {
+            return false
+        }
+        //檢查/線上有無其他皇后
+        if( puzzle[ i ][ (row-i) + col ] ){
+            return false
+        }
+        //檢查\線上有無其他皇后
+        if( puzzle[ i ][ (i-row) + col ] ){
+            return false
+        }
+    }
+    
+    return true
 }
 function getAllpuzzleSolution( puzzleNumber ){
     const puzzleSolutions = []  //裝解答
     if(!verify(puzzleNumber)) return 
-     //1.外圈從第一row開始跑；然後使用check函式放皇后，
-        //check回傳true的話，往下一row移動 ； false的話往右邊的col移動
-        //如果在該row的最後一col check結果也是false，表示無解
+    let puzzle = initPuzzle(puzzleNumber)
+    puzzle[0][0] = QUEENSYMBOL
+    console.log(colhasQueenPosition([2,1],puzzle))
+     //1.外圈從第一row開始跑；然後使用check函式看該row有沒有能放皇后的位置
+        //1-1 true的話，把皇后放進去，然後往下一row跑；能跑完最後一row，就推此解到puzzleSolutions中
+        //1-2 false的話表示無解，直接中斷；並退回上一row，
+          //1-2-1 在上一row中繼續上面1-1步驟
+        
     //2.最後照puzzleSolutions印出所有解答
 }
-
+getAllpuzzleSolution( 4 )
 //test
 // getAllpuzzleSolution('aa')  //"請輸入數字"
 // getAllpuzzleSolution(-1)     //"請輸入正整數"
