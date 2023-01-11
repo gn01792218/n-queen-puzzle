@@ -100,15 +100,10 @@ function getAllpuzzleSolution( puzzleNumber ){
     for( let i = 0 ; i <puzzleNumber ; i++){
         let colLength = puzzle[i].length
         for( let j = 0 ; j< colLength ; j++){
-            
             if(colhasQueenPosition([i,j],puzzle)){ //如果那一格可以放皇后
                 puzzle[i][j] = QUEENSYMBOL //放皇后
                 lastQueenIndex = j //紀錄皇后在哪一個col
                 console.log('可以放皇后，放在',i,lastQueenIndex,`(${j})`,puzzle)
-                if( j === colLength-1 ) {
-                    puzzleSolutions.push(puzzle) //最後一行也有解的話整個解推到puzzleSolutions
-                    //怎麼開始下一個?!
-                }
                 break
             }
             if( j === colLength-1) { //如果已經跑到該row最後一格了，表示無解
@@ -123,6 +118,11 @@ function getAllpuzzleSolution( puzzleNumber ){
             
         }
         console.log(i,'row結束')
+        if( i === puzzleNumber ) {
+            puzzleSolutions.push(puzzle) //最後一行也有解的話整個解推到puzzleSolutions
+            console.log('跑到最後了,存一下',puzzleSolutions)
+            //怎麼開始下一個?!
+        }
     }
         
     //2.最後照puzzleSolutions印出所有解答
