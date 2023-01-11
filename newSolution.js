@@ -97,9 +97,17 @@ function getAllpuzzleSolution( puzzleNumber ){
         //1-2 false的話表示無解，直接中斷；並退回上一row，
           //1-2-1 在上一row中繼續上面1-1步驟
     let lastQueenIndex = 0
+    let noSolution = false
     for( let i = 0 ; i <puzzleNumber ; i++){
         let colLength = puzzle[i].length
+        if(noSolution){
+            i-- //因為重新跑回圈會在+一次，要再扣一次
+            puzzle[i][lastQueenIndex] = null 
+            console.log('無解，要退回',i,'上一個皇后位置',lastQueenIndex,'並將位置在',i,lastQueenIndex,'的皇后刪除',puzzle)
+            noSolution = false //重置
+        }
         for( let j = 0 ; j< colLength ; j++){
+            console.log('開始第',i,'圈','第',j,'格')
             if(colhasQueenPosition([i,j],puzzle)){ //如果那一格可以放皇后
                 puzzle[i][j] = QUEENSYMBOL //放皇后
                 lastQueenIndex = j //紀錄皇后在哪一個col
@@ -107,15 +115,14 @@ function getAllpuzzleSolution( puzzleNumber ){
                 break
             }
             if( j === colLength-1) { //如果已經跑到該row最後一格了，表示無解
-                console.log('無解',i,j,'上一個皇后位置',lastQueenIndex)
-                // i-- 
+                console.log('最後一格了，此時的位置',i,j)
+                if( i === puzzleNumber-1 ){
+                    console.log('最最末一行')
+                }
+                i--
+                noSolution = true
                 break
-                // //無解，退回上一row
-                // //把原本皇后位置設為null
-                // puzzle[i][lastQueenIndex] = null 
-                // console.log('把原本位置',i,lastQueenIndex,'的皇后設為null',puzzle)
             }
-            
         }
         console.log(i,'row結束')
         if( i === puzzleNumber ) {
