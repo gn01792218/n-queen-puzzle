@@ -71,7 +71,7 @@ function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
  */
 function colhasQueenPosition(colposition,puzzle) {
     const [row, col] = colposition
-        
+    
     for(let i = 0 ; i < row ; i++){
         //檢查直線上有無其他皇后
         if( puzzle[ i ][ col ] === QUEENSYMBOL) {
@@ -86,7 +86,6 @@ function colhasQueenPosition(colposition,puzzle) {
             return false
         }
     }
-    
     return true
 }
 function getAllpuzzleSolution( puzzleNumber ){
@@ -97,42 +96,37 @@ function getAllpuzzleSolution( puzzleNumber ){
         //1-1 true的話，把皇后放進去，然後往下一row跑；能跑完最後一row，就推此解到puzzleSolutions中
         //1-2 false的話表示無解，直接中斷；並退回上一row，
           //1-2-1 在上一row中繼續上面1-1步驟
+    let lastQueenIndex = 0
     for( let i = 0 ; i <puzzleNumber ; i++){
-        let lastQueenIndex = 0
         let colLength = puzzle[i].length
         for( let j = 0 ; j< colLength ; j++){
+            
             if(colhasQueenPosition([i,j],puzzle)){ //如果那一格可以放皇后
                 puzzle[i][j] = QUEENSYMBOL //放皇后
                 lastQueenIndex = j //紀錄皇后在哪一個col
+                console.log('可以放皇后，放在',i,lastQueenIndex,`(${j})`,puzzle)
                 if( j === colLength-1 ) {
                     puzzleSolutions.push(puzzle) //最後一行也有解的話整個解推到puzzleSolutions
                     //怎麼開始下一個?!
                 }
                 break
             }
-            if( j === colLength-1 ) { //如果已經跑到最後一行了，表示無解
-                console.log('無解')
-                //無解，退回上一row
-                i-- 
-                //把原本皇后位置設為null
-                puzzle[i][lastQueenIndex] = null 
-                //皇后往下一格移動
-                if( lastQueenIndex +1 !== colLength ) { //有位置
-                    if( colhasQueenPosition([i,lastQueenIndex +1],puzzle) ) { //且可以放
-                        puzzle[i][lastQueenIndex +1] = QUEENSYMBOL
-                        break
-                    }else { //不能放，再退一格
-                        i--
-                    }
-                }else{ //沒位置
-                    i-- //若上一row沒位置可放了，再往上一row找
-                }
+            if( j === colLength-1) { //如果已經跑到該row最後一格了，表示無解
+                console.log('無解',i,j,'上一個皇后位置',lastQueenIndex)
+                // i-- 
+                break
+                // //無解，退回上一row
+                // //把原本皇后位置設為null
+                // puzzle[i][lastQueenIndex] = null 
+                // console.log('把原本位置',i,lastQueenIndex,'的皇后設為null',puzzle)
             }
+            
         }
-        console.log(i,'row結束',puzzle)
+        console.log(i,'row結束')
     }
         
     //2.最後照puzzleSolutions印出所有解答
+    console.log(puzzleSolutions)
 }
 getAllpuzzleSolution( 4 )
 //test
