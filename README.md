@@ -21,3 +21,4 @@ solution.js
 ## 查看solution
 
 # 解題思維
+https://www.youtube.com/watch?v=MozDUrcChCA&t=365s&ab_channel=BytesNBits

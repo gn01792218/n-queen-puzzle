@@ -91,55 +91,16 @@ function colhasQueenPosition(colposition,puzzle) {
 function getAllpuzzleSolution( puzzleNumber ){
     const puzzleSolutions = []  //裝解答
     if(!verify(puzzleNumber)) return 
-    let puzzle = initPuzzle(puzzleNumber)
-     //1.外圈從第一row開始跑；然後使用check函式看該row有沒有能放皇后的位置
-        //1-1 true的話，把皇后放進去，然後往下一row跑；能跑完最後一row，就推此解到puzzleSolutions中
-        //1-2 false的話表示無解，直接中斷；並退回上一row，
-          //1-2-1 在上一row中繼續上面1-1步驟
-    let lastQueenIndex = 0
-    let noSolution = false
-    for( let i = 0 ; i <puzzleNumber ; i++){
-        let colLength = puzzle[i].length
-        if(noSolution){
-            i-- //因為重新跑回圈會在+一次，要再扣一次
-            puzzle[i][lastQueenIndex] = null 
-            console.log('無解，要退回',i,'上一個皇后位置',lastQueenIndex,'並將位置在',i,lastQueenIndex,'的皇后刪除',puzzle)
-            noSolution = false //重置
-        }
-        for( let j = 0 ; j< colLength ; j++){
-            console.log('開始第',i,'圈','第',j,'格')
-            if(colhasQueenPosition([i,j],puzzle)){ //如果那一格可以放皇后
-                puzzle[i][j] = QUEENSYMBOL //放皇后
-                lastQueenIndex = j //紀錄皇后在哪一個col
-                console.log('可以放皇后，放在',i,lastQueenIndex,`(${j})`,puzzle)
-                break
-            }
-            if( j === colLength-1) { //如果已經跑到該row最後一格了，表示無解
-                console.log('最後一格了，此時的位置',i,j)
-                if( i === puzzleNumber-1 ){
-                    console.log('最最末一行')
-                }
-                i--
-                noSolution = true
-                break
-            }
-        }
-        console.log(i,'row結束')
-        if( i === puzzleNumber ) {
-            puzzleSolutions.push(puzzle) //最後一行也有解的話整個解推到puzzleSolutions
-            console.log('跑到最後了,存一下',puzzleSolutions)
-            //怎麼開始下一個?!
-        }
-    }
+    // let puzzle = initPuzzle(puzzleNumber)
+    const currentSolution = [] // --> 專門儲存皇后所在位置的列表清單，例如[1,3,2,5,6,7,4,0]，index代表row，值代表col
+    
+    //一行一行放皇后 
+    //每一行都會檢查每一格是否可以放皇后 (目標 將皇后擺放在第一個安全位置上 ) 
+       //若該格可以放，將該col位置紀錄起來，currentSolution[row] = col ==> 然後繼續找下一格!!!
+       //若該格不能放，則繼續跑下一格
+       //若能跑到currentSolution[最後一個]，就是有解答，直接推送到解答組裡面
         
     //2.最後照puzzleSolutions印出所有解答
     console.log(puzzleSolutions)
 }
 getAllpuzzleSolution( 4 )
-//test
-// getAllpuzzleSolution('aa')  //"請輸入數字"
-// getAllpuzzleSolution(-1)     //"請輸入正整數"
-// getAllpuzzleSolution(0)    //"請輸入正整數"
-// getAllpuzzleSolution(5.5)     //"請輸入正整數"
-// getAllpuzzleSolution(-5.5)     //"請輸入正整數"
-// getAllpuzzleSolution(9)     //'請輸入偶數'
