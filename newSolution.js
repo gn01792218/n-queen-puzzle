@@ -6,7 +6,7 @@ const maxPuzzleSize = 16
 //全局參數
 const puzzleSolutions = []  //裝所有解答用
 const currentSolution = [] // --> 專門儲存皇后所在位置的列表清單，例如[1,3,2,5,6,7,4,0]，index代表row，值代表col
-const puzzleNumber = 5
+const puzzleNumber = 8
 //methods
 
 //工具方法
@@ -47,23 +47,23 @@ function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
 /**
  * 印出所有解的方法
  * @param {number} puzzleNumber 
- * @param {所有解的清單} puzzleSolutionsArr 
+ * @param {所有解的清單} allSolutionArray 
  * @returns 
  */
-function drawAllPuzzle(puzzleNumber,puzzleSolutionsArr){
-    console.log('解',puzzleSolutionsArr)
-    let result = ''
-    //照puzzleSolutions印出所有解答
-    puzzleSolutionsArr.forEach((solution,index)=>{
-        let puzzleSolutionStr = `//-----第${index+1}組解----//\n`
-        solution.forEach( ( colIndex, index) => {
-            if( index === puzzleNumber -1 ) puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL) +'\n'
-            else puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL)+'\n'
-        })
-        result += puzzleSolutionStr
-    })
-    console.log(result + `\n一共${puzzleSolutionsArr.length}組解`)
-    return result + `\n一共${puzzleSolutionsArr.length}組解`
+function drawAllPuzzle(puzzleNumber,allSolutionArray){
+    console.log('解',allSolutionArray)
+    // let result = ''
+    // //照puzzleSolutions印出所有解答
+    // allSolutionArray.forEach((solution,index)=>{
+    //     let puzzleSolutionStr = `//-----第${index+1}組解----//\n`
+    //     solution.forEach( ( colIndex, index) => {
+    //         if( index === puzzleNumber -1 ) puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL) +'\n'
+    //         else puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL)+'\n'
+    //     })
+    //     result += puzzleSolutionStr
+    // })
+    // console.log(result + `\n一共${allSolutionArray.length}組解`)
+    // return result + `\n一共${allSolutionArray.length}組解`
 }
 //演算法
 /**
@@ -88,16 +88,13 @@ function isSafe(currentposition, solutionArr) {
     }
     return true
 }
-function findQueenLoop(puzzleNumber,currentRow,solutionArr){
+function findQueenLoop(puzzleNumber,currentRow,solutionArr,allSolutionArray){
     //開始每一col的查找
     for(let col = 0 ; col < puzzleNumber ; col++ ){
         if(isSafe([ currentRow, col ], solutionArr)) {
             solutionArr[currentRow] = col //標示皇后位置
-            if( currentRow === puzzleNumber-1 ) {
-                puzzleSolutions.push(solutionArr) //走完全部，把解推入解方陣列中
-                console.log('正解',solutionArr,'所有解',puzzleSolutions)
-            }
-            else findQueenLoop(puzzleNumber,currentRow+1,solutionArr) //繼續往下找，col停在這等待
+            if( currentRow === puzzleNumber-1 ) allSolutionArray.push(solutionArr) //走完全部，把解推入解方陣列中
+            else findQueenLoop(puzzleNumber,currentRow+1,solutionArr,allSolutionArray) //繼續往下找，col停在這等待
         }else {
             continue
         }
@@ -105,8 +102,8 @@ function findQueenLoop(puzzleNumber,currentRow,solutionArr){
 }
 function getAllpuzzleSolution( puzzleNumber ){
     if(!verify(puzzleNumber)) return 
-    findQueenLoop(puzzleNumber,0,currentSolution)
-    // console.log( puzzleSolutions )
+    findQueenLoop(puzzleNumber,0,currentSolution,puzzleSolutions)
 }
 getAllpuzzleSolution( puzzleNumber )
+// console.log('最終的陣列',puzzleSolutions)
 // drawAllPuzzle(puzzleNumber,puzzleSolutions)
