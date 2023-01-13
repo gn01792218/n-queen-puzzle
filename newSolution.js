@@ -65,24 +65,20 @@ function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
 /**
  * 檢查該格位置可否放置皇后 :
  * 只要檢查 其上一Row以上的Rows中 有無任一在其 米字範圍內 的皇后即可
- * @param {Array} colposition ，[rowIndex, colIndex]
- * @param {Array} puzzle , 棋盤二維陣列
+ * @param {Array} currentposition ，[rowIndex, colIndex]
+ * @param {Array} solutionArr , 每一行皇后位置的清單
  * @returns {boolean} 回傳true表示該格可以放皇后
  */
-function colhasQueenPosition(colposition,puzzle) {
-    const [row, col] = colposition
+function isSafe(currentposition, solutionArr) {
+    const [testRow, testCol] = currentposition  //例如現在位置是 2,2
     
-    for(let i = 0 ; i < row ; i++){
+    for(let row = 0 ; row < testRow ; row++){
         //檢查直線上有無其他皇后
-        if( puzzle[ i ][ col ] === QUEENSYMBOL) {
+        if( testCol === solutionArr[row]) {
             return false
         }
-        //檢查/線上有無其他皇后
-        if( puzzle[ i ][ (row-i) + col ] ){
-            return false
-        }
-        //檢查\線上有無其他皇后
-        if( puzzle[ i ][ (i-row) + col ] ){
+        //檢查/和\線上有無其他皇后
+        if( Math.abs(testCol - solutionArr[row]) === Math.abs(testRow - row)){
             return false
         }
     }
