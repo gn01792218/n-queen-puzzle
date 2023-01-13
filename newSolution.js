@@ -1,9 +1,12 @@
   //樣式修改變數
 const QUEENSYMBOL = 'Q' //主要符號
 const SPACESYMBOL = '.' //次要符號
-const noVacanciesSymbol = 'X'
-const maxPuzzleSize = 10
+const maxPuzzleSize = 16
 
+//全局參數
+const puzzleSolutions = []  //裝所有解答用
+const currentSolution = [] // --> 專門儲存皇后所在位置的列表清單，例如[1,3,2,5,6,7,4,0]，index代表row，值代表col
+const puzzleNumber = 5
 //methods
 
 //工具方法
@@ -20,15 +23,10 @@ function verify(puzzleNumber){
         console.log('請輸入正整數')
         return false
     }
-    if( (puzzleNumber % 2) !==0  ) {
-        console.log('請輸入偶數')
-        return 
-    }   
     return true
 }
 
 /**
- * 棋盤產生器
  * 畫出一行的棋盤
  * @param {*} puzzleNumber 必填，代表 n-puzzle 的 n
  * @param {*} placementIndex 必填，指示Queen要放在哪個位置
@@ -46,7 +44,27 @@ function drawPuzzle(puzzleNumber, placementIndex, queenSymbol, spaceSymbol){
 
     return result
 }
-
+/**
+ * 印出所有解的方法
+ * @param {number} puzzleNumber 
+ * @param {所有解的清單} puzzleSolutionsArr 
+ * @returns 
+ */
+function drawAllPuzzle(puzzleNumber,puzzleSolutionsArr){
+    console.log('解',puzzleSolutionsArr)
+    let result = ''
+    //照puzzleSolutions印出所有解答
+    puzzleSolutionsArr.forEach((solution,index)=>{
+        let puzzleSolutionStr = `//-----第${index+1}組解----//\n`
+        solution.forEach( ( colIndex, index) => {
+            if( index === puzzleNumber -1 ) puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL) +'\n'
+            else puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL)+'\n'
+        })
+        result += puzzleSolutionStr
+    })
+    console.log(result + `\n一共${puzzleSolutionsArr.length}組解`)
+    return result + `\n一共${puzzleSolutionsArr.length}組解`
+}
 //演算法
 /**
  * 檢查該格位置可否放置皇后 :
@@ -70,29 +88,25 @@ function isSafe(currentposition, solutionArr) {
     }
     return true
 }
-function findQueenLoop(puzzleNumber,currentRow,solutionArr,puzzleSolutions){
-    console.log('開啟',currentRow,'的搜尋')
+function findQueenLoop(puzzleNumber,currentRow,solutionArr){
     //開始每一col的查找
     for(let col = 0 ; col < puzzleNumber ; col++ ){
-        console.log('搜尋',col)
-        if(!isSafe([ currentRow, col ], solutionArr)) continue
-        else{ //找到安全位置
+        if(isSafe([ currentRow, col ], solutionArr)) {
             solutionArr[currentRow] = col //標示皇后位置
-            if( currentRow !== puzzleNumber - 1 ) {  //不是最後一行的話
-                console.log('找到往下',)
-                findQueenLoop(puzzleNumber,++currentRow,solutionArr) //繼續往下找
+            if( currentRow === puzzleNumber-1 ) {
+                puzzleSolutions.push(solutionArr) //走完全部，把解推入解方陣列中
+                console.log('正解',solutionArr,'所有解',puzzleSolutions)
             }
-            else puzzleSolutions.push(solutionArr) //走完全部，把解推入解方陣列中
+            else findQueenLoop(puzzleNumber,currentRow+1,solutionArr) //繼續往下找，col停在這等待
+        }else {
+            continue
         }
     }
-    console.log(currentRow,'迴圈結束')
 }
 function getAllpuzzleSolution( puzzleNumber ){
     if(!verify(puzzleNumber)) return 
-    const puzzleSolutions = []  //裝解答
-    const currentSolution = [] // --> 專門儲存皇后所在位置的列表清單，例如[1,3,2,5,6,7,4,0]，index代表row，值代表col
-    findQueenLoop(puzzleNumber,0,currentSolution,puzzleSolutions)
-    //2.最後照puzzleSolutions印出所有解答
-    console.log(puzzleSolutions)
+    findQueenLoop(puzzleNumber,0,currentSolution)
+    // console.log( puzzleSolutions )
 }
-getAllpuzzleSolution( 4 )
+getAllpuzzleSolution( puzzleNumber )
+// drawAllPuzzle(puzzleNumber,puzzleSolutions)

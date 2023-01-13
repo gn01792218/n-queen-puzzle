@@ -19,3 +19,9 @@ solution.js
 
 # 解題思維
 https://www.youtube.com/watch?v=MozDUrcChCA&t=365s&ab_channel=BytesNBits
+
+# 坑點紀錄
+## 遞迴函式的增長條件 - currentRow 不可以用++
+因為用++會使原本的currentRow也增加，
+而我們只是要call下一個遞迴時，row+1而已，不可以影響原本這個code block的 currentRow
+## 印出來的所有解都一樣?!
