@@ -4,6 +4,14 @@
 ```
 node solution.js
 ```
+## 更換n皇后解
+預設是8皇后<br>
+請修改程式碼  //全局參數  下的 puzzleNumber 參數
+```javascript
+//全局參數
+//...其他略
+const puzzleNumber = 8   //修改數值，觀看各種數量皇后的所有解答
+```
 
 # 檔案區域導覽 :
 
@@ -17,8 +25,6 @@ solution.js
     //methods      
       //1.工具方法  -->工具方法，如畫棋盤
       //2.演算法    -->判斷皇后解的一些核心演算法
-
-## 查看solution
 
 # 解題思維
 ## 參考影片
@@ -38,3 +44,10 @@ https://www.youtube.com/watch?v=MozDUrcChCA&t=365s&ab_channel=BytesNBits
 ## 遞迴函式的增長條件 - currentRow 不可以用++
 因為用++會使原本的currentRow也增加，
 而我們只是要call下一個遞迴時，row+1而已，不可以影響原本這個code block的 currentRow
+
+# 遞迴演算法的優缺點
+## 優點
+程式碼可讀性較高，不像for迴圈有波動拳的造型...
+## 缺點
+程式執行時間較長，效率較差
+

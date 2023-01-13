@@ -6,7 +6,7 @@ const SPACESYMBOL = '.' //次要符號
 const maxPuzzleSize = 16
 const puzzleSolutions = []  //裝所有解答用
 const currentSolution = [] // --> 專門儲存皇后所在位置的列表清單，例如[1,3,2,5,6,7,4,0]，index代表row，值代表col
-const puzzleNumber = 5
+const puzzleNumber = 8   //可以修改n皇后的輸出解
 
 //結果輸出
 getAllpuzzleSolution( puzzleNumber )
