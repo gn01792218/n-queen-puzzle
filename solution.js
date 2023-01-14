@@ -60,6 +60,7 @@ function printSolution(puzzleNumber,solutionArray){
         if( index === puzzleNumber -1 ) puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL) +'\n'
         else puzzleSolutionStr += drawPuzzle(puzzleNumber,colIndex, QUEENSYMBOL, SPACESYMBOL)+'\n'
     })
+    console.log(puzzleSolutionStr)
     return puzzleSolutionStr
 }
 // /**
@@ -117,7 +118,7 @@ function findQueenLoop(puzzleNumber,currentRow,solutionArr,allSolutionArray){
             // console.log('現在位置',currentRow,col)
             if( currentRow === puzzleNumber-1 ){
                 allSolutionArray.push( solutionArr ) //走完全部，把解推入解方陣列中
-                console.log(printSolution(puzzleNumber, solutionArr))
+                printSolution(puzzleNumber, solutionArr)
             } 
             else findQueenLoop(puzzleNumber,currentRow+1,solutionArr,allSolutionArray) //繼續往下找，col停在這等待
         }else {
